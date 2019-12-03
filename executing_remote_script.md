@@ -1,4 +1,4 @@
-This technique can be used to transfer and then remotely execute a Unix shell script when running Jupyter Notebook on Windows.
+This technique can be used to transfer and then remotely execute a Unix shell script while running Jupyter Notebook on Windows.
 It uses "pscp" and "plink" commands from putty family. These commands need to be in system PATH.
 
 Steps:
