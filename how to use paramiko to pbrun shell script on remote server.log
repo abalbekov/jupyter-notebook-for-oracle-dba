@@ -1,0 +1,45 @@
+--
+-- using paramiko to run bash script on remote server
+-- with password authentication and pbrun
+-- 
+-- first make ssh connection as NUIDa (using CyberArc psw)
+-- then run a script via "pbrun -u oracle bash -s"
+--
+
+host='***'
+port=22
+user='***'
+psw='***'
+
+import paramiko
+ssh=paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect(host,port,user,psw)
+
+# at this point connectio should have established
+
+script='''
+export ORACLE_SID=earslgxu1
+export ORACLE_HOME=/u01/app/oracle/product/12.2.0.1/db_1
+PATH=$ORACLE_HOME/bin:$PATH
+env | egrep "ORACLE|PATH"
+$ORACLE_HOME/bin/srvctl status database -d earslgxu
+echo done
+'''
+
+cmd=f"echo '{script}' | pbrun -u oracle bash -s"
+
+stdin,stdout,stderr=ssh.exec_command(cmd)
+outlines=stdout.readlines()
+resp=''.join(outlines)
+print(resp)
+
+	==> output:
+	
+		ORACLE_HOME=/u01/app/oracle/product/12.2.0.1/db_1
+		ORACLE_SID=earslgxu1
+		PATH=/u01/app/oracle/product/12.2.0.1/db_1/bin:/usr/bin:/bin:/usr/sbin:/sbin
+		Instance earslgxu1 is running on node oraracnp03
+		Instance earslgxu2 is running on node oraracnp04
+		done
+
